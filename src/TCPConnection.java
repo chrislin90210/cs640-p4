@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -236,7 +237,7 @@ public class TCPConnection {
         }
         // convert to tcp format
         TCPPacket tcpPacket = new TCPPacket();
-        tcpPacket.deserialize(segment.getData());
+        tcpPacket.deserialize(Arrays.copyOf(segment.getData(), segment.getLength()));
 
         System.out.println(TCPPacket.formatPacketDet(tcpPacket, false, false));
 

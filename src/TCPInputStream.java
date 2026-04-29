@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 public class TCPInputStream extends InputStream {
@@ -153,7 +154,7 @@ public class TCPInputStream extends InputStream {
 
             // convert to tcp format
             TCPPacket tcpPacket = new TCPPacket();
-            tcpPacket.deserialize(segment.getData());
+            tcpPacket.deserialize(Arrays.copyOf(segment.getData(), segment.getLength()));
 
             System.out.println(TCPPacket.formatPacketDet(tcpPacket, true, false));
 

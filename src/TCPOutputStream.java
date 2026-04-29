@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.Arrays;
 import java.util.concurrent.*;
 
 public class TCPOutputStream extends OutputStream {
@@ -309,7 +310,7 @@ public class TCPOutputStream extends OutputStream {
 
             // convert to tcp format
             TCPPacket tcpPacket = new TCPPacket();
-            tcpPacket.deserialize(segment.getData());
+            tcpPacket.deserialize(Arrays.copyOf(segment.getData(), segment.getLength()));
 
             // compute checksum and discard corrupted segments
             short expectedChecksum = tcpPacket.computeChecksum(false);
