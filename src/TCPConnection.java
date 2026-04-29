@@ -217,6 +217,7 @@ public class TCPConnection {
         DatagramPacket segment = new DatagramPacket(new byte[28], 28);
 
         try {
+            System.out.println("[Setup]: Waiting to Receive");
             socket.receive(segment);
         } catch (SocketTimeoutException ex) {
             // can close now
