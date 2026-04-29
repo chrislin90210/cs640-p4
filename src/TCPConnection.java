@@ -296,6 +296,8 @@ public class TCPConnection {
 
                 timer.cancel(false);
                 // TODO: handle this shit
+                listener.stop();
+                socket.close();
             }
             // client sent this
             else if(isActive) {
