@@ -329,6 +329,7 @@ public class TCPConnection {
             packet.setTimestamp(System.nanoTime());
             packet.computeChecksum(true);
             socket.send(new DatagramPacket(packet.serialize(true), 0, packet.getFullLength(), toAddress, toPort));
+            System.out.println("My reply: flags are "+packet.getFlags());
             System.out.println(TCPPacket.formatPacketDet(packet, false, true));
             if(this.timer != null)
                 this.timer.cancel(false);

@@ -82,8 +82,8 @@ public class TCPPacket {
     public static String formatPacketDet(TCPPacket packet, boolean isData, boolean isToBeSent) {
         String dir = isToBeSent? "snd ": "rcv ";
         String syn = (TCPPacket.SYN & packet.getFlags()) == TCPPacket.SYN ? "S ": "- ";
-        String ack = (TCPPacket.ACK & packet.getFlags()) == TCPPacket.ACK ? "S ": "- ";
-        String fin = (TCPPacket.FIN & packet.getFlags()) == TCPPacket.FIN ? "S ": "- ";
+        String ack = (TCPPacket.ACK & packet.getFlags()) == TCPPacket.ACK ? "A ": "- ";
+        String fin = (TCPPacket.FIN & packet.getFlags()) == TCPPacket.FIN ? "F ": "- ";
         String dat = isData ? "D ": "- ";
         double seconds = System.nanoTime() / 1000000000.0;
         String now = String.format("%.3f", seconds);
