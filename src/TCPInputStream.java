@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
-import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 public class TCPInputStream extends InputStream {
@@ -40,7 +39,13 @@ public class TCPInputStream extends InputStream {
 
     private Semaphore mutex;
 
-    private boolean hasReachedEOS;
+
+    private int numIncorrectChkSums;
+
+    private int numRetransmits;
+
+    private int numDupACKS;
+
 
     public TCPInputStream(int slidingWindowSize, int MSS, int myPort, String senderIP, int senderPort) throws SocketException, UnknownHostException {
         this.socket = new DatagramSocket(myPort);
@@ -57,7 +62,11 @@ public class TCPInputStream extends InputStream {
         this.nextByteExpected = 0;
         this.nextSegExpected = 0;
         this.lastByteReceived = -1;
-        this.hasReachedEOS = false;
+
+
+
+
+
         this.listener = new Listener();
         this.dataHandlerThread = new Thread(listener);
         this.dataHandlerThread.start();

@@ -58,6 +58,13 @@ public class TCPOutputStream extends OutputStream {
 
     private Listener listener;
 
+    private int numIncorrectChkSums;
+
+    private int numRetransmits;
+
+    private int numDupACKS;
+
+
 
     public TCPOutputStream(int slidingWindowSize, int MSS, int myPort, String receiverIP, int receiverPort) throws Exception {
         if(MSS < TCPPacket.TCPHeaderLength)
@@ -85,6 +92,15 @@ public class TCPOutputStream extends OutputStream {
         this.receiverAddress = InetAddress.getByName(receiverIP);
         this.receiverPort = receiverPort;
         this.mutex = new Semaphore(1, true);
+
+
+        numIncorrectChkSums = 0;
+
+        numRetransmits = 0;
+
+        numDupACKS = 0;
+
+
         this.listener = new Listener();
         this.ackHandlerThread = new Thread(listener);
         this.ackHandlerThread.start();
@@ -221,6 +237,13 @@ public class TCPOutputStream extends OutputStream {
 
     private void handleTimeout(int segNum) {
         try {
+            try {
+                mutex.acquire();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            numRetransmits++;
+            mutex.release();
             sendSegment(segNum);
         } catch (IOException ex) {
             System.out.println("IO Exception in resending");
@@ -291,6 +314,13 @@ public class TCPOutputStream extends OutputStream {
             // compute checksum and discard corrupted segments
             short expectedChecksum = tcpPacket.computeChecksum(false);
             if(expectedChecksum != tcpPacket.getChecksum()) {
+                try {
+                    mutex.acquire();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                numIncorrectChkSums++;
+                mutex.release();
                 System.out.println("Corrupted Packet: Seq. Num. " + tcpPacket.getByteSequenceNumber());
                 return;
             }
@@ -349,14 +379,20 @@ public class TCPOutputStream extends OutputStream {
                 // TODO: check
                 else if(lastByteAcked + 1 == tcpPacket.getAcknowledgement()) {
                     rep_counter++;
-
-                    if(rep_counter == 3) {
+                    numDupACKS++;
+                    if(rep_counter >= 3) {
+                        if(rep_counter == 16) {
+                            System.out.println("Error: Maximum Retransmissions crossed");
+                            listener.stop();
+                            socket.close();
+                            return;
+                        }
                         for(int i = lastSegAcked + 1; i <= lastSegSent; i++) {
                             sendSegment(i);
                             startTimerFor(i);
                         }
-                        //TODO: check maybe not needed here - rep_counter = 0;
                     }
+
                 }
             }
             mutex.release();
