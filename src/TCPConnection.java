@@ -218,7 +218,6 @@ public class TCPConnection {
         DatagramPacket segment = new DatagramPacket(new byte[28], 28);
 
         try {
-            System.out.println("[Setup]: Waiting to Receive");
             socket.receive(segment);
         } catch (SocketTimeoutException ex) {
             // can close now
@@ -253,6 +252,7 @@ public class TCPConnection {
             if((tcpPacket.getFlags() & TCPPacket.SYN) == TCPPacket.SYN && isActive) {
                 if(tcpPacket.getAcknowledgement() != 1)
                     return;
+                System.out.println("Got SYN-ACK from server");
                 timer.cancel(false);
                 TCPPacket packet = new TCPPacket();
                 packet.setDataAndLength(new byte[]{0}, 0, 1);
@@ -277,6 +277,7 @@ public class TCPConnection {
             else if((tcpPacket.getFlags() & TCPPacket.FIN) == TCPPacket.FIN && isActive) {
                 if(tcpPacket.getAcknowledgement() != expectedFINAck)
                     return;
+                System.out.println("Got FIN-ACK from server");
                 timer.cancel(false);
                 TCPPacket packet = new TCPPacket();
                 packet.setDataAndLength(new byte[]{0}, 0, 1);
@@ -316,6 +317,7 @@ public class TCPConnection {
 
         // client has sent me connection request
         else if((tcpPacket.getFlags() & TCPPacket.SYN) == TCPPacket.SYN) {
+            System.out.println("Got SYN from client");
             isActive = true;
             toAddress = segment.getAddress();
             toPort = segment.getPort();

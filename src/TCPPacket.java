@@ -86,8 +86,8 @@ public class TCPPacket {
         String fin = (TCPPacket.FIN & packet.getFlags()) == TCPPacket.FIN ? "S ": "- ";
         String dat = isData ? "D ": "- ";
         double seconds = System.nanoTime() / 1000000000.0;
-        String now = String.format("%.6f", seconds);
-        return dir + now + syn + ack + fin + dat + packet.getByteSequenceNumber()+ " "+ packet.getLength()+ " "+ packet.getAcknowledgement();
+        String now = String.format("%.3f", seconds);
+        return dir + now + " " + syn + ack + fin + dat + packet.getByteSequenceNumber()+ " "+ packet.getLength()+ " "+ packet.getAcknowledgement();
     }
 
     public byte[] serialize(boolean includeChecksum) {
