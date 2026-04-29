@@ -115,7 +115,8 @@ public class TCPPacket {
         flags = (byte)(lengthAndFlags & 0x7);
         byteBuffer.getShort();
         checksum = byteBuffer.getShort();
-        byteBuffer.get(data);
+        data = new byte[length];
+        byteBuffer.get(data, 0, length);
     }
 
     public short computeChecksum(boolean update) {
