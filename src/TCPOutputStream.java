@@ -219,6 +219,11 @@ public class TCPOutputStream extends OutputStream {
         mutex.release();
     }
 
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
     public void waitTillDone(int lastExpectedByte) throws InterruptedException {
         try {
             mutex.acquire();
@@ -237,8 +242,6 @@ public class TCPOutputStream extends OutputStream {
         for(int i = 0; i < slidingWindowSize; i++)
             if(timers[i]!=null)
                 timers[i].cancel(false);
-        socket.close();
-
     }
 
 
@@ -401,7 +404,6 @@ public class TCPOutputStream extends OutputStream {
                             for(int i = 0; i < slidingWindowSize; i++)
                                 if(timers[i]!=null)
                                     timers[i].cancel(false);
-                            socket.close();
                             return;
                         }
                         for(int i = lastSegAcked + 1; i <= lastSegSent; i++) {

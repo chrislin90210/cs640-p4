@@ -44,6 +44,10 @@ public class TCPInputStream extends InputStream {
 
     private int numOOSPackets;
 
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
     public int[] getStats() {
         return new int[]{nextByteExpected, nextSegExpected, numOOSPackets, numIncorrectChkSums, numRetransmits, 0};
     }
@@ -100,7 +104,7 @@ public class TCPInputStream extends InputStream {
                 // stop the data segment handler
 
                 listener.stop(); // stop looping
-                socket.close(); // close socket (for TCPConnection to use a new one for passive end)
+                // socket.close(); // close socket (for TCPConnection to use a new one for passive end)
                 mutex.release();
                 return -1;
             }
