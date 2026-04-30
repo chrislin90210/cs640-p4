@@ -90,6 +90,7 @@ public class TCPend {
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
             // perform passive open
             connection.passiveOpen();
+            System.out.println("Got final ACK from server; cant read data now");
             // after open, create InputStream
             TCPInputStream inputStream = new TCPInputStream(sws, mtu, myPort, remoteIP, remotePort);
 

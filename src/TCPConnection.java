@@ -74,6 +74,7 @@ public class TCPConnection {
         listenerThread.start();
 
         listenerThread.join();
+        socket.close(); // TODO: check
         numTries = 0;
     }
 
