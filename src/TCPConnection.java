@@ -245,6 +245,13 @@ public class TCPConnection {
                 timer.cancel(false);
             socket.close();
             return;
+        } catch (RuntimeException ex) {
+            if(socket.isClosed()) {
+                listener.stop();
+                if(timer!=null)
+                    timer.cancel(false);
+                return;
+            }
         }
 
         if(isActive) {
