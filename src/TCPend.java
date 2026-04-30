@@ -79,7 +79,7 @@ public class TCPend {
             System.out.println("Done writing (all ACKed); will active close now");
 
             // perform active close
-            connection.activeEnd(totalBytesWritten - 1);
+            connection.activeEnd(totalBytesWritten - 1); // causes Error: Exception in thread "main" java.net.BindException: Address already in use (Bind failed)
 
             int[] stat1 = connection.getStats();
             int[] stat2 = outputStream.getStats();

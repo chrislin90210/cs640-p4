@@ -90,8 +90,8 @@ public class TCPConnection {
     }
 
     public void activeEnd(int lastByteSent) throws IOException, InterruptedException {
-        socket.close();
-        socket = new DatagramSocket(myPort);
+        //socket.close();
+        //socket = new DatagramSocket(myPort);
         isReadyToClose = true;
         TCPPacket packet = new TCPPacket();
         packet.setDataAndLength(new byte[]{0}, 0, 1);
@@ -124,8 +124,8 @@ public class TCPConnection {
     public int lastByteRead;
 
     public void passiveEnd(int lastByteRead) throws IOException, InterruptedException {
-        socket.close();
-        socket = new DatagramSocket(myPort);
+        //socket.close();
+        //socket = new DatagramSocket(myPort);
         this.lastByteRead = lastByteRead;
         isReadyToClose = true;
         TCPPacket packet = new TCPPacket();
