@@ -285,7 +285,7 @@ public class TCPConnection {
             if((tcpPacket.getFlags() & TCPPacket.SYN) == TCPPacket.SYN && isActive) {
                 if(tcpPacket.getAcknowledgement() != 1)
                     return;
-                System.out.println("Got SYN-ACK from server");
+                //System.out.println("Got SYN-ACK from server");
                 timer.cancel(false);
                 numTries=0;
                 TCPPacket packet = new TCPPacket();
@@ -311,10 +311,10 @@ public class TCPConnection {
             }
             // server sent this
             else if((tcpPacket.getFlags() & TCPPacket.FIN) == TCPPacket.FIN && isActive) {
-                System.out.println("Expected FIN ACK :" + expectedFINAck);
+                //System.out.println("Expected FIN ACK :" + expectedFINAck);
                 if(tcpPacket.getAcknowledgement() != expectedFINAck)
                     return;
-                System.out.println("Got FIN-ACK from server");
+                //System.out.println("Got FIN-ACK from server");
                 timer.cancel(false);
                 numTries=0;
                 TCPPacket packet = new TCPPacket();
@@ -342,7 +342,7 @@ public class TCPConnection {
             }
             // client sent this
             else if(isActive) {
-                System.out.println("Got ACK from client after my SYN-ACK");
+                //System.out.println("Got ACK from client after my SYN-ACK");
                 timer.cancel(false);
 
                 // TODO: check
@@ -356,7 +356,7 @@ public class TCPConnection {
 
         // client has sent me connection request
         else if((tcpPacket.getFlags() & TCPPacket.SYN) == TCPPacket.SYN) {
-            System.out.println("Got SYN from client");
+            //System.out.println("Got SYN from client");
             isActive = true;
             toAddress = segment.getAddress();
             toPort = segment.getPort();
@@ -368,7 +368,7 @@ public class TCPConnection {
             packet.setTimestamp(System.nanoTime());
             packet.computeChecksum(true);
             socket.send(new DatagramPacket(packet.serialize(true), 0, packet.getFullLength(), toAddress, toPort));
-            System.out.println("My reply: flags are "+packet.getFlags());
+            //System.out.println("My reply: flags are "+packet.getFlags());
             System.out.println(TCPPacket.formatPacketDet(packet, false, true));
             if(this.timer != null)
                 this.timer.cancel(false);
