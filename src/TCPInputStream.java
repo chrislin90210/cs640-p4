@@ -266,5 +266,10 @@ public class TCPInputStream extends InputStream {
         packet.computeChecksum(true);
         socket.send(new DatagramPacket(packet.serialize(true), 0, packet.getFullLength(), senderAddress, senderPort));
         System.out.println(TCPPacket.formatPacketDet(packet, false, true));
+
+        // for debug
+        TCPPacket testPacket = new TCPPacket();
+        testPacket.deserialize(packet.serialize(true));
+        System.out.println("DS: "+TCPPacket.formatPacketDet(testPacket, false, true));
     }
 }
