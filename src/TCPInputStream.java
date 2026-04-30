@@ -166,6 +166,8 @@ public class TCPInputStream extends InputStream {
 
             System.out.println(TCPPacket.formatPacketDet(tcpPacket, true, false));
 
+        System.out.println("FOR DEBUG: Next Byte Exp is "+nextByteExpected);
+
             // compute checksum and discard corrupted segments
             short expectedChecksum = tcpPacket.computeChecksum(false);
             if(expectedChecksum != tcpPacket.getChecksum()) {
@@ -263,5 +265,6 @@ public class TCPInputStream extends InputStream {
         packet.setDataAndLength(new byte[]{(byte) 0}, 0, 1);
         packet.computeChecksum(true);
         socket.send(new DatagramPacket(packet.serialize(true), 0, packet.getFullLength(), senderAddress, senderPort));
+        System.out.println(TCPPacket.formatPacketDet(packet, false, true));
     }
 }
