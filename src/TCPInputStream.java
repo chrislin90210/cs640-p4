@@ -32,21 +32,21 @@ public class TCPInputStream extends InputStream {
 
     private Semaphore full;
 
-    boolean halfReadSegmentExists;
-
     private Thread dataHandlerThread;
 
     private Listener listener;
 
     private Semaphore mutex;
 
-
     private int numIncorrectChkSums;
 
     private int numRetransmits;
 
-    private int numDupACKS;
+    private int numOOSPackets;
 
+    public int[] getStats() {
+        return new int[]{nextByteExpected, nextSegExpected, numOOSPackets, numIncorrectChkSums, numRetransmits, 0};
+    }
 
     public TCPInputStream(int slidingWindowSize, int MSS, int myPort, String senderIP, int senderPort) throws SocketException, UnknownHostException {
         this.socket = new DatagramSocket(myPort);
@@ -118,6 +118,8 @@ public class TCPInputStream extends InputStream {
     }
 
 
+
+
     private class Listener implements Runnable {
         private volatile boolean running = true;
 
@@ -157,6 +159,13 @@ public class TCPInputStream extends InputStream {
             // compute checksum and discard corrupted segments
             short expectedChecksum = tcpPacket.computeChecksum(false);
             if(expectedChecksum != tcpPacket.getChecksum()) {
+                try {
+                    mutex.acquire();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                numIncorrectChkSums++;
+                mutex.release();
                 System.out.println("Corrupted Packet: Seq. Num. " + tcpPacket.getByteSequenceNumber());
                 return;
             }
@@ -172,7 +181,8 @@ public class TCPInputStream extends InputStream {
                     && tcpPacket.getByteSequenceNumber() + tcpPacket.getLength() - roundedUpLBR - 1 <= maxSegmentSize * slidingWindowSize) {
                 lastByteReceived = Math.max(lastByteReceived, tcpPacket.getByteSequenceNumber() + tcpPacket.getLength() - 1);
 
-
+                if(tcpPacket.getByteSequenceNumber() != nextByteExpected)
+                    numOOSPackets++;
 
                 int segNum = tcpPacket.getByteSequenceNumber() / maxSegmentSize;
 
@@ -220,6 +230,7 @@ public class TCPInputStream extends InputStream {
             }
             // if my ACKs didn't reach client so client resent old segments
             else if(tcpPacket.getByteSequenceNumber() < nextByteExpected) {
+                numRetransmits++;
                 sendAck(tcpPacket.getTimestamp(), nextByteExpected);
             }
 

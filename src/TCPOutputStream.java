@@ -63,8 +63,12 @@ public class TCPOutputStream extends OutputStream {
 
     private int numRetransmits;
 
-    private int numDupACKS;
+    private int numDupACKs;
 
+
+    public int[] getStats() {
+        return new int[]{lastByteWritten + 1, lastSegWritten + 1, 0, numIncorrectChkSums, numRetransmits, numDupACKs};
+    }
 
 
     public TCPOutputStream(int slidingWindowSize, int MSS, int myPort, String receiverIP, int receiverPort) throws Exception {
@@ -99,7 +103,7 @@ public class TCPOutputStream extends OutputStream {
 
         numRetransmits = 0;
 
-        numDupACKS = 0;
+        numDupACKs = 0;
 
 
         this.listener = new Listener();
@@ -228,8 +232,11 @@ public class TCPOutputStream extends OutputStream {
         // wait till all segments are ACKED
         done.acquire();
         // once ACKED, stop listening
-
         listener.stop();
+        // cancel all timers
+        for(int i = 0; i < slidingWindowSize; i++)
+            if(timers[i]!=null)
+                timers[i].cancel(false);
         socket.close();
 
     }
@@ -380,11 +387,14 @@ public class TCPOutputStream extends OutputStream {
                 // TODO: check
                 else if(lastByteAcked + 1 == tcpPacket.getAcknowledgement()) {
                     rep_counter++;
-                    numDupACKS++;
+                    numDupACKs++;
                     if(rep_counter >= 3) {
                         if(rep_counter == 16) {
                             System.out.println("Error: Maximum Retransmissions crossed");
                             listener.stop();
+                            for(int i = 0; i < slidingWindowSize; i++)
+                                if(timers[i]!=null)
+                                    timers[i].cancel(false);
                             socket.close();
                             return;
                         }

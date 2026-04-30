@@ -33,8 +33,12 @@ public class TCPConnection {
 
     private int expectedFINAck;
 
-    public DatagramSocket getSocket() {
-        return socket;
+    private int numIncorrectChkSums;
+
+    private int numRetransmissions;
+
+    public int[] getStats() {
+        return new int[]{0, 0, 0, numIncorrectChkSums, numRetransmissions, 0};
     }
 
     public TCPConnection(int myPort, String myIP) throws UnknownHostException, SocketException {
@@ -47,6 +51,10 @@ public class TCPConnection {
         this.expectedFINAck = -1;
         this.isReadyToClose = false;
         this.lastByteRead = 0; // for server
+
+        numIncorrectChkSums=0;
+
+        numRetransmissions=0;
     }
 
     public void activeOpen(int toPort, String toIP) throws IOException, InterruptedException {
@@ -64,6 +72,9 @@ public class TCPConnection {
         listenerThread.join();
 
         // done with socket
+        if(timer!=null)
+            timer.cancel(false);
+
         socket.close();
     }
 
@@ -105,10 +116,13 @@ public class TCPConnection {
         listenerThread.start();
 
         listenerThread.join();
+        if(timer!=null)
+            timer.cancel(false);
         socket.close();
     }
 
     public int lastByteRead;
+
     public void passiveEnd(int lastByteRead) throws IOException, InterruptedException {
         socket.close();
         socket = new DatagramSocket(myPort);
@@ -136,6 +150,8 @@ public class TCPConnection {
         listenerThread.start();
 
         listenerThread.join();
+        if(timer!=null)
+            timer.cancel(false);
         socket.close();
     }
 
@@ -180,8 +196,9 @@ public class TCPConnection {
 
     // TODO: check edge case: many tries no response
     private void resendSYN(TCPPacket packet) throws IOException {
+        numRetransmissions++;
         numTries ++;
-        if(numTries == 30) {
+        if(numTries == 16) {
             timer.cancel(false);
             return;
         }
@@ -199,8 +216,9 @@ public class TCPConnection {
 
 
     private void resendFIN(TCPPacket packet) throws IOException {
+        numRetransmissions++;
         numTries ++;
-        if(numTries == 30)
+        if(numTries == 16)
             timer.cancel(false);
         socket.send(new DatagramPacket(packet.serialize(true), 0, packet.getFullLength(), toAddress, toPort));
         System.out.println(TCPPacket.formatPacketDet(packet, false, true));
@@ -223,6 +241,8 @@ public class TCPConnection {
         } catch (SocketTimeoutException ex) {
             // can close now
             listener.stop();
+            if(timer!=null)
+                timer.cancel(false);
             socket.close();
 
         }
@@ -244,6 +264,7 @@ public class TCPConnection {
         // compute checksum and discard corrupted segments
         short expectedChecksum = tcpPacket.computeChecksum(false);
         if(expectedChecksum != tcpPacket.getChecksum()) {
+            numIncorrectChkSums++;
             System.out.println("Corrupted Packet: Seq. Num. " + tcpPacket.getByteSequenceNumber());
             return;
         }
@@ -255,6 +276,7 @@ public class TCPConnection {
                     return;
                 System.out.println("Got SYN-ACK from server");
                 timer.cancel(false);
+                numTries=0;
                 TCPPacket packet = new TCPPacket();
                 packet.setDataAndLength(new byte[]{0}, 0, 1);
                 packet.setFlags(TCPPacket.ACK);
@@ -267,6 +289,8 @@ public class TCPConnection {
                 // TODO: check
 
                 listener.stop();
+                if(timer!=null)
+                    timer.cancel(false);
                 socket.close();
                 // if my ack doesn't reach server, I signal ack on first data segment
 
@@ -280,6 +304,7 @@ public class TCPConnection {
                     return;
                 System.out.println("Got FIN-ACK from server");
                 timer.cancel(false);
+                numTries=0;
                 TCPPacket packet = new TCPPacket();
                 packet.setDataAndLength(new byte[]{0}, 0, 1);
                 packet.setFlags(TCPPacket.ACK);
@@ -299,7 +324,7 @@ public class TCPConnection {
                     return;
 
                 timer.cancel(false);
-                // TODO: handle this shit
+                // TODO: handle this
                 listener.stop();
                 socket.close();
             }

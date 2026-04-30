@@ -76,9 +76,15 @@ public class TCPend {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            System.out.println("Done writing (all ACKed); will active close now");
 
             // perform active close
             connection.activeEnd(totalBytesWritten - 1);
+
+            int[] stat1 = connection.getStats();
+            int[] stat2 = outputStream.getStats();
+            System.out.println(((stat1[0]+stat2[0]) * 8)/1000000+"Mb "+(stat1[1]+stat2[1])+" "+(stat1[2]+stat2[2])+" "+(stat1[3]+stat2[3])+" "
+                    +(stat1[4]+stat2[4])+" "+(stat1[5]+stat2[5]));
 
         } else {
             System.out.println("Receiver Mode");
@@ -91,7 +97,7 @@ public class TCPend {
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
             // perform passive open
             Object[] senderInfo = connection.passiveOpen();
-            System.out.println("Got final ACK from server; cant read data now");
+            System.out.println("Got final ACK from server; can read data now");
             // after open, create InputStream
             TCPInputStream inputStream = new TCPInputStream(sws, mtu, myPort, ((InetAddress)senderInfo[1]).getHostAddress(), (int)senderInfo[0]);
 
@@ -112,6 +118,11 @@ public class TCPend {
 
             // since we got a -1, it must be because we got a FIN segment
             connection.passiveEnd(totalBytesRead);
+
+            int[] stat1 = connection.getStats();
+            int[] stat2 = inputStream.getStats();
+            System.out.println(((stat1[0]+stat2[0]) * 8)/1000000+"Mb "+(stat1[1]+stat2[1])+" "+(stat1[2]+stat2[2])+" "+(stat1[3]+stat2[3])+" "
+                    +(stat1[4]+stat2[4])+" "+(stat1[5]+stat2[5]));
         }
     }
 }
