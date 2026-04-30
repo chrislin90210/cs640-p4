@@ -216,12 +216,12 @@ public class TCPInputStream extends InputStream {
                 }
                 // outside "if"-block to enable fast transmit in sender side
                 // but this will cause multiple acks TODO: check
-                sendAck(tcpPacket.getTimestamp());
+                sendAck(tcpPacket.getTimestamp(), nextByteExpected); // TODO:::: this method calls mutex again (DEADLOCK)
 
             }
             // if my ACKs didn't reach client so client resent old segments
             else if(tcpPacket.getByteSequenceNumber() < nextByteExpected) {
-                sendAck(tcpPacket.getTimestamp());
+                sendAck(tcpPacket.getTimestamp(), nextByteExpected);
             }
 
             mutex.release();
@@ -229,15 +229,11 @@ public class TCPInputStream extends InputStream {
 
     }
 
-    private void sendAck(long timestamp) throws IOException {
+    private void sendAck(long timestamp, int ackNum) throws IOException {
         TCPPacket packet = new TCPPacket();
-        try {
-            mutex.acquire();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        packet.setAcknowledgement(nextByteExpected);
-        mutex.release();
+
+        packet.setAcknowledgement(ackNum);
+
         packet.setTimestamp(timestamp);
         packet.setFlags(TCPPacket.ACK);
         packet.setByteSequenceNumber(0);
