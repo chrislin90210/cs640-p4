@@ -115,7 +115,7 @@ public class TCPConnection {
         isReadyToClose = true;
         TCPPacket packet = new TCPPacket();
         packet.setDataAndLength(new byte[]{0}, 0, 1);
-        packet.setFlags((byte) ((TCPPacket.ACK & TCPPacket.FIN) & 0xff));
+        packet.setFlags((byte) ((TCPPacket.ACK | TCPPacket.FIN) & 0xff));
         packet.setByteSequenceNumber(1);
         packet.setAcknowledgement(lastByteRead + 2);
         packet.setTimestamp(System.nanoTime());
@@ -323,7 +323,7 @@ public class TCPConnection {
             toPort = segment.getPort();
             TCPPacket packet = new TCPPacket();
             packet.setDataAndLength(new byte[]{0}, 0, 1);
-            packet.setFlags((byte) ((TCPPacket.ACK & TCPPacket.SYN) & 0xff));
+            packet.setFlags((byte) ((TCPPacket.ACK | TCPPacket.SYN) & 0xff));
             packet.setByteSequenceNumber(0);
             packet.setAcknowledgement(1);
             packet.setTimestamp(System.nanoTime());
