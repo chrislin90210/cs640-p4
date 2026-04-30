@@ -400,18 +400,10 @@ public class TCPOutputStream extends OutputStream {
                     rep_counter++;
                     numDupACKs++;
                     if(rep_counter >= 3) {
-                        if(rep_counter == 16) {
-                            System.out.println("Error: Maximum Retransmissions crossed");
-                            listener.stop();
-                            for(int i = 0; i < slidingWindowSize; i++)
-                                if(timers[i]!=null)
-                                    timers[i].cancel(false);
-                            return;
-                        }
-                        for(int i = lastSegAcked + 1; i <= lastSegSent; i++) {
-                            sendSegment(i);
-                            startTimerFor(i);
-                        }
+                        int lostSeg = lastSegAcked + 1;
+                        sendSegment(lostSeg);
+                        startTimerFor(lostSeg);
+                        rep_counter = 0;
                     }
 
                 }
