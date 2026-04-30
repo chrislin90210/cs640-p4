@@ -158,7 +158,6 @@ public class TCPInputStream extends InputStream {
             short expectedChecksum = tcpPacket.computeChecksum(false);
             if(expectedChecksum != tcpPacket.getChecksum()) {
                 System.out.println("Corrupted Packet: Seq. Num. " + tcpPacket.getByteSequenceNumber());
-                sendAck(tcpPacket.getTimestamp());
                 return;
             }
 
