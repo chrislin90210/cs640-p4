@@ -271,5 +271,6 @@ public class TCPInputStream extends InputStream {
         TCPPacket testPacket = new TCPPacket();
         testPacket.deserialize(packet.serialize(true));
         System.out.println("DS: "+TCPPacket.formatPacketDet(testPacket, false, true));
+        System.out.println("Len 1: "+packet.getFullLength() + " Len 2: "+packet.serialize(true).length + " Data Len: "+packet.getLength());
     }
 }
