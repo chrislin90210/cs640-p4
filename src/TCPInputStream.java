@@ -110,9 +110,10 @@ public class TCPInputStream extends InputStream {
             }
 
             lastByteRead += dataSegment.getLength();
-            mutex.release();
+
 
             int numRead = dataSegment.readAMAP(b, off, maxSegmentSize, 0);
+            mutex.release();
 
             off += numRead;
             len -= numRead;
@@ -196,11 +197,14 @@ public class TCPInputStream extends InputStream {
                 if(tcpPacket.getByteSequenceNumber() != nextByteExpected)
                     numOOSPackets++;
 
+                System.out.println("WINDOW: [ "+nextByteExpected + " - " + (maxSegmentSize * slidingWindowSize + 1+ roundedUpLBR - tcpPacket.getLength())+" ]");
+
                 int segNum = tcpPacket.getByteSequenceNumber() / maxSegmentSize;
 
                 if((tcpPacket.getFlags() & TCPPacket.FIN) == TCPPacket.FIN) {
+                    /*
                     System.out.println("ByteNum of FIN Packet: "+tcpPacket.getByteSequenceNumber());
-                    System.out.println("Next Byte Expected: "+nextByteExpected);
+                    System.out.println("Next Byte Expected: "+nextByteExpected);*/
                     segNum = (tcpPacket.getByteSequenceNumber() + maxSegmentSize - 1) / maxSegmentSize;
                     Segment finSegment = new Segment(1, tcpPacket.getByteSequenceNumber());
                     finSegment.setFIN(true);
