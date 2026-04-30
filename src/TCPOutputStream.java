@@ -238,6 +238,8 @@ public class TCPOutputStream extends OutputStream {
         done.acquire();
         // once ACKED, stop listening
         listener.stop();
+
+        scheduler.shutdown();
         // cancel all timers
         for(int i = 0; i < slidingWindowSize; i++)
             if(timers[i]!=null)

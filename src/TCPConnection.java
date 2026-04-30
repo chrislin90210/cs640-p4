@@ -45,6 +45,10 @@ public class TCPConnection {
         return new int[]{0, 0, 0, numIncorrectChkSums, numRetransmissions, 0};
     }
 
+    public void close() {
+        scheduler.shutdown();
+    }
+
     public TCPConnection(int myPort, String myIP) throws UnknownHostException, SocketException {
         this.myPort = myPort;
         this.myAddress = InetAddress.getByName(myIP);

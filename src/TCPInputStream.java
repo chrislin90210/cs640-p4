@@ -106,6 +106,7 @@ public class TCPInputStream extends InputStream {
                 listener.stop(); // stop looping
                 // socket.close(); // close socket (for TCPConnection to use a new one for passive end)
                 mutex.release();
+
                 return -1;
             }
 

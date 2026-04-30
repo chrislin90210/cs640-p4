@@ -95,6 +95,7 @@ public class TCPend {
                     +(stat1[4]+stat2[4])+" "+(stat1[5]+stat2[5]));
 
             outputStream.getSocket().close();
+            connection.close();
 
         } else {
             System.out.println("Receiver Mode");
@@ -142,6 +143,7 @@ public class TCPend {
                     +(stat1[4]+stat2[4])+" "+(stat1[5]+stat2[5]));
 
             inputStream.getSocket().close();
+            connection.close();
 
         }
     }
