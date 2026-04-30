@@ -234,10 +234,11 @@ public class TCPInputStream extends InputStream {
                         nextSegExpected++;
                         dataSegment = buffer[nextSegExpected % slidingWindowSize];
                     }
+                    // should be utside "if"-block to enable fast transmit in sender side??
+                    // but this will cause multiple acks TODO: check
+                    sendAck(tcpPacket.getTimestamp(), nextByteExpected); // TODO:::: this method calls mutex again (DEADLOCK)
                 }
-                // outside "if"-block to enable fast transmit in sender side
-                // but this will cause multiple acks TODO: check
-                sendAck(tcpPacket.getTimestamp(), nextByteExpected); // TODO:::: this method calls mutex again (DEADLOCK)
+
 
             }
             // if my ACKs didn't reach client so client resent old segments

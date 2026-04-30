@@ -328,6 +328,8 @@ public class TCPOutputStream extends OutputStream {
             TCPPacket tcpPacket = new TCPPacket();
             tcpPacket.deserialize(Arrays.copyOf(segment.getData(), segment.getLength()));
 
+            System.out.println(TCPPacket.formatPacketDet(tcpPacket, false, false));
+
             // compute checksum and discard corrupted segments
             short expectedChecksum = tcpPacket.computeChecksum(false);
             if(expectedChecksum != tcpPacket.getChecksum()) {
