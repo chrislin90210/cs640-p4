@@ -43,19 +43,20 @@ public class TCPend {
         }
 
         if (senderMode) {
+            /*
             System.out.println("Sender Mode");
             System.out.println("myPort = " + myPort);
             System.out.println("remoteIP = " + remoteIP);
             System.out.println("remotePort = " + remotePort);
             System.out.println("fileName = " + fileName);
             System.out.println("mtu = " + mtu);
-            System.out.println("sws = " + sws);
+            System.out.println("sws = " + sws);*/
 
             if(mtu < TCPPacket.TCPHeaderLength) {
-                System.out.println("MTU cannot be smaller than the length of a TCP Header");
+                System.out.println("MTU cannot be smaller than the length of a TCP Header (24)");
                 return;
             }
-            // TODO: open connection
+
 
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
             // perform active open
@@ -81,11 +82,11 @@ public class TCPend {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("Done writing (all ACKed); will active close now");
+            //System.out.println("Done writing (all ACKed); will active close now");
 
             connection.setSocket(outputStream.getSocket());
 
-            System.out.println("Total bytes Wrriten: "+totalBytesWritten);
+            //System.out.println("Total bytes Wrriten: "+totalBytesWritten);
             // perform active close
             connection.activeEnd(totalBytesWritten - 1); // causes Error: Exception in thread "main" java.net.BindException: Address already in use (Bind failed)
 
@@ -98,14 +99,15 @@ public class TCPend {
             connection.close();
 
         } else {
+            /*
             System.out.println("Receiver Mode");
             System.out.println("port = " + myPort);
             System.out.println("fileName = " + fileName);
             System.out.println("mtu = " + mtu);
-            System.out.println("sws = " + sws);
+            System.out.println("sws = " + sws);*/
 
             if(mtu < TCPPacket.TCPHeaderLength) {
-                System.out.println("MTU cannot be smaller than the length of a TCP Header");
+                System.out.println("MTU cannot be smaller than the length of a TCP Header (24)");
                 return;
             }
 
@@ -113,7 +115,7 @@ public class TCPend {
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
             // perform passive open
             Object[] senderInfo = connection.passiveOpen();
-            System.out.println("Got final ACK from server; can read data now");
+            //System.out.println("Got final ACK from server; can read data now");
             // after open, create InputStream
             TCPInputStream inputStream = new TCPInputStream(sws, mtu, myPort, ((InetAddress)senderInfo[1]).getHostAddress(), (int)senderInfo[0]);
 
@@ -133,7 +135,7 @@ public class TCPend {
             }
 
             connection.setSocket(inputStream.getSocket());
-            System.out.println("TCPend: total bytes read: "+totalBytesRead);
+            //System.out.println("TCPend: total bytes read: "+totalBytesRead);
             // since we got a -1, it must be because we got a FIN segment
             connection.passiveEnd(totalBytesRead - 1);
 

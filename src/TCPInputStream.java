@@ -168,7 +168,7 @@ public class TCPInputStream extends InputStream {
 
             System.out.println(TCPPacket.formatPacketDet(tcpPacket, true, false));
 
-        System.out.println("FOR DEBUG: Next Byte Exp is "+nextByteExpected);
+        //System.out.println("FOR DEBUG: Next Byte Exp is "+nextByteExpected);
 
             // compute checksum and discard corrupted segments
             short expectedChecksum = tcpPacket.computeChecksum(false);
@@ -198,7 +198,7 @@ public class TCPInputStream extends InputStream {
                 if(tcpPacket.getByteSequenceNumber() != nextByteExpected)
                     numOOSPackets++;
 
-                System.out.println("WINDOW: [ "+nextByteExpected + " - " + (maxSegmentSize * slidingWindowSize + 1+ roundedUpLBR - tcpPacket.getLength())+" ]");
+                //System.out.println("WINDOW: [ "+nextByteExpected + " - " + (maxSegmentSize * slidingWindowSize + 1+ roundedUpLBR - tcpPacket.getLength())+" ]");
 
                 int segNum = tcpPacket.getByteSequenceNumber() / maxSegmentSize;
 
