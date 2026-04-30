@@ -91,7 +91,7 @@ public class TCPPacket {
     }
 
     public byte[] serialize(boolean includeChecksum) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length + 24);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length + TCPHeaderLength);
         byteBuffer.putInt(byteSequenceNumber);
         byteBuffer.putInt(acknowledgement);
         byteBuffer.putLong(timestamp);

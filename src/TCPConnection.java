@@ -234,7 +234,7 @@ public class TCPConnection {
     // TODO: wait TIME_OUT time for response
 
     public void receive() throws IOException, InterruptedException {
-        DatagramPacket segment = new DatagramPacket(new byte[28], 28);
+        DatagramPacket segment = new DatagramPacket(new byte[50], 50);
 
         try {
             socket.receive(segment);
@@ -244,7 +244,7 @@ public class TCPConnection {
             if(timer!=null)
                 timer.cancel(false);
             socket.close();
-
+            return;
         }
 
         if(isActive) {
