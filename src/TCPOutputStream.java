@@ -307,7 +307,13 @@ public class TCPOutputStream extends OutputStream {
 
     private void handlePacket() throws IOException {
 
-            socket.receive(segment);
+            try {
+                socket.receive(segment);
+            } catch(SocketException exception) {
+                if (socket.isClosed())
+                    return;
+                throw exception;
+            }
             // check IP address
             if(!segment.getAddress().equals(receiverAddress))
                 return;

@@ -141,7 +141,13 @@ public class TCPInputStream extends InputStream {
 
     private void handlePacket() throws IOException {
 
+        try {
             socket.receive(segment);
+        } catch(SocketException exception) {
+            if (socket.isClosed())
+                return;
+            throw exception;
+        }
 
             // check IP address
             if(!segment.getAddress().equals(senderAddress))
