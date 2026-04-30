@@ -363,7 +363,7 @@ public class TCPOutputStream extends OutputStream {
                     do {
                         lastSegAcked++;
                         // clear timer of LS
-                        timers[lastSegAcked].cancel(false);
+                        timers[lastSegAcked % slidingWindowSize].cancel(false);
 
                         lastByteAcked += buffer[lastSegAcked % slidingWindowSize].getLength();
                         available.release();

@@ -5,7 +5,6 @@ import java.net.Socket;
 
 public class TCPend {
 
-    // TODO: if user enetrs MTU < TCP Header len do not accept
     public static void main(String[] args) throws Exception {
 
         int myPort = 0, remotePort = 0, mtu = 0, sws = 0;
@@ -51,6 +50,11 @@ public class TCPend {
             System.out.println("fileName = " + fileName);
             System.out.println("mtu = " + mtu);
             System.out.println("sws = " + sws);
+
+            if(mtu < TCPPacket.TCPHeaderLength) {
+                System.out.println("MTU cannot be smaller than the length of a TCP Header");
+                return;
+            }
             // TODO: open connection
 
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
@@ -90,12 +94,19 @@ public class TCPend {
             System.out.println(((stat1[0]+stat2[0]) * 8)/1000000+"Mb "+(stat1[1]+stat2[1])+" "+(stat1[2]+stat2[2])+" "+(stat1[3]+stat2[3])+" "
                     +(stat1[4]+stat2[4])+" "+(stat1[5]+stat2[5]));
 
+            outputStream.getSocket().close();
+
         } else {
             System.out.println("Receiver Mode");
             System.out.println("port = " + myPort);
             System.out.println("fileName = " + fileName);
             System.out.println("mtu = " + mtu);
             System.out.println("sws = " + sws);
+
+            if(mtu < TCPPacket.TCPHeaderLength) {
+                System.out.println("MTU cannot be smaller than the length of a TCP Header");
+                return;
+            }
 
             //TODO: open connection
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
@@ -129,6 +140,9 @@ public class TCPend {
             int[] stat2 = inputStream.getStats();
             System.out.println(((stat1[0]+stat2[0]) * 8)/1000000+"Mb "+(stat1[1]+stat2[1])+" "+(stat1[2]+stat2[2])+" "+(stat1[3]+stat2[3])+" "
                     +(stat1[4]+stat2[4])+" "+(stat1[5]+stat2[5]));
+
+            inputStream.getSocket().close();
+
         }
     }
 }
