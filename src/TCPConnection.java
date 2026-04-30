@@ -300,6 +300,7 @@ public class TCPConnection {
             }
             // server sent this
             else if((tcpPacket.getFlags() & TCPPacket.FIN) == TCPPacket.FIN && isActive) {
+                System.out.println("Expected FIN ACK :" + expectedFINAck);
                 if(tcpPacket.getAcknowledgement() != expectedFINAck)
                     return;
                 System.out.println("Got FIN-ACK from server");
