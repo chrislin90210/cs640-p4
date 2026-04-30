@@ -4,6 +4,7 @@ import java.net.InetAddress;
 
 public class TCPend {
 
+    // TODO: if user enetrs MTU < TCP Header len do not accept
     public static void main(String[] args) throws Exception {
 
         int myPort = 0, remotePort = 0, mtu = 0, sws = 0;
@@ -89,10 +90,10 @@ public class TCPend {
             //TODO: open connection
             TCPConnection connection = new TCPConnection(myPort, InetAddress.getLocalHost().getHostAddress());
             // perform passive open
-            connection.passiveOpen();
+            Object[] senderInfo = connection.passiveOpen();
             System.out.println("Got final ACK from server; cant read data now");
             // after open, create InputStream
-            TCPInputStream inputStream = new TCPInputStream(sws, mtu, myPort, remoteIP, remotePort);
+            TCPInputStream inputStream = new TCPInputStream(sws, mtu, myPort, ((InetAddress)senderInfo[1]).getHostAddress(), (int)senderInfo[0]);
 
             assert fileName != null;
             int totalBytesRead = 0;

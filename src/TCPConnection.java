@@ -67,15 +67,15 @@ public class TCPConnection {
         socket.close();
     }
 
-    public void passiveOpen() throws InterruptedException {
+    public Object[] passiveOpen() throws InterruptedException {
         listener = new Listener();
         Thread listenerThread = new Thread(listener);
         // start listening for responses
         listenerThread.start();
 
         listenerThread.join();
-        socket.close(); // TODO: check
         numTries = 0;
+        return new Object[]{toPort, toAddress};
     }
 
     public void activeEnd(int lastByteSent) throws IOException, InterruptedException {
@@ -305,6 +305,7 @@ public class TCPConnection {
             }
             // client sent this
             else if(isActive) {
+                System.out.println("Got ACK from client after my SYN-ACK");
                 timer.cancel(false);
 
                 // TODO: check

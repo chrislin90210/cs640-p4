@@ -64,10 +64,6 @@ public class TCPInputStream extends InputStream {
         this.nextSegExpected = 0;
         this.lastByteReceived = -1;
 
-
-
-
-
         this.listener = new Listener();
         this.dataHandlerThread = new Thread(listener);
         this.dataHandlerThread.start();
