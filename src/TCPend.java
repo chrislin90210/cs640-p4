@@ -80,6 +80,8 @@ public class TCPend {
             System.out.println("Done writing (all ACKed); will active close now");
 
             connection.setSocket(outputStream.getSocket());
+
+            System.out.println("Total bytes Wrriten: "+totalBytesWritten);
             // perform active close
             connection.activeEnd(totalBytesWritten - 1); // causes Error: Exception in thread "main" java.net.BindException: Address already in use (Bind failed)
 
@@ -119,7 +121,7 @@ public class TCPend {
             }
 
             connection.setSocket(inputStream.getSocket());
-
+            System.out.println("TCPend: total bytes read: "+totalBytesRead);
             // since we got a -1, it must be because we got a FIN segment
             connection.passiveEnd(totalBytesRead);
 
