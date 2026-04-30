@@ -123,7 +123,7 @@ public class TCPend {
             connection.setSocket(inputStream.getSocket());
             System.out.println("TCPend: total bytes read: "+totalBytesRead);
             // since we got a -1, it must be because we got a FIN segment
-            connection.passiveEnd(totalBytesRead);
+            connection.passiveEnd(totalBytesRead - 1);
 
             int[] stat1 = connection.getStats();
             int[] stat2 = inputStream.getStats();
